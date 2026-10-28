@@ -30,19 +30,21 @@ jobs:
 
       - name: Rapport Trivy (JSON)
         uses: aquasecurity/trivy-action@v0.36.0
-
         with:
           image-ref: ${{ env.IMAGE }}:ci
           format: json
           output: trivy-report.json
           exit-code: "0"
 
+      - name: Recuperer le modele HTML Trivy
+        run: curl -sSfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/html.tpl -o html.tpl
+
       - name: Rapport Trivy (HTML)
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE }}:ci
           format: template
-          template: "@/contrib/html.tpl"
+          template: "@html.tpl"
           output: trivy-report.html
           exit-code: "0"
 
@@ -63,7 +65,6 @@ jobs:
           path: trivy-report.*
 
       - name: Quality gate (HIGH et CRITICAL)
-
         uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ env.IMAGE }}:ci
